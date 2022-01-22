@@ -7,12 +7,13 @@
 
 import UIKit
 
-protocol LEDBoardSettingDelegate: AnyObject {
-    func changeSetting(text: String?, textColor: UIColor, backgroundColor: UIColor)
+protocol SendDataDelegate: AnyObject {
+    func sendData(ledText: String?, textColor: UIColor, backgroundColor: UIColor)
 }
 
 class SettingViewController: UIViewController {
 
+    //MARK: - IBOutlet
     @IBOutlet weak var contentField: UITextField!
     
     @IBOutlet weak var yellowButton: UIButton!
@@ -23,71 +24,70 @@ class SettingViewController: UIViewController {
     @IBOutlet weak var blueButton: UIButton!
     @IBOutlet weak var orangeButton: UIButton!
     
-    weak var delegate: LEDBoardSettingDelegate?
-    var textColor: UIColor = .yellow
-    var backgroundColor: UIColor = .black
+    //MARK: - Storage var
     var ledText: String?
-
+    var textColor: UIColor!
+    var backgroundColor: UIColor!
     
-    private func ledChange() {
-        if let ledText = self.ledText {
-            self.contentField.text = ledText
-        }
-        self.changeTextColor(color: textColor)
-        self.changeBackgroundColor(color: backgroundColor)
-    }
+    weak var delegate: SendDataDelegate?
     
-    
+    //MARK: - Override
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.ledChange()
+        self.configureView()
     }
     
+    //MARK: - IBAction
     @IBAction func tabTextColorButton(_ sender: UIButton) {
         if sender == yellowButton {
-            self.changeTextColor(color: .yellow)
             self.textColor = .yellow
+            self.changeTextColorButtonAlpha(color: .yellow)
         } else if sender == purpleButton {
-            self.changeTextColor(color: .purple)
             self.textColor = .purple
+            self.changeTextColorButtonAlpha(color: .purple)
         } else {
-            self.changeTextColor(color: .green)
             self.textColor = .green
+            self.changeTextColorButtonAlpha(color: .green)
         }
     }
-    
     
     @IBAction func tabBackgroundColorButton(_ sender: UIButton) {
         if sender == blackButton {
-            self.changeBackgroundColor(color: .black)
             self.backgroundColor = .black
+            self.changeBackgroundColorButtonAlpha(color: .black)
         } else if sender == blueButton {
-            self.changeBackgroundColor(color: .blue)
             self.backgroundColor = .blue
+            self.changeBackgroundColorButtonAlpha(color: .blue)
         } else {
-            self.changeBackgroundColor(color: .orange)
             self.backgroundColor = .orange
+            self.changeBackgroundColorButtonAlpha(color: .orange)
         }
     }
     
     @IBAction func tabSaveButton(_ sender: UIButton) {
-        self.delegate?.changeSetting(
-            text: self.contentField.text,
-            textColor: self.textColor,
-            backgroundColor: self.backgroundColor
-        )
+        self.delegate?.sendData(ledText: contentField.text, textColor: self.textColor, backgroundColor: self.backgroundColor)
         self.navigationController?.popViewController(animated: true)
     }
     
-    private func changeTextColor(color: UIColor) {
+    //MARK: - Method
+    private func changeTextColorButtonAlpha(color: UIColor) {
         self.yellowButton.alpha = color == .yellow ? 1 : 0.2
         self.purpleButton.alpha = color == .purple ? 1 : 0.2
         self.greenButton.alpha = color == .green ? 1 : 0.2
-    }                                     //안써도 알아서 추론.
-    
-    private func changeBackgroundColor(color: UIColor) {
-        self.blackButton.alpha = color == UIColor.black ? 1 : 0.2
-        self.blueButton.alpha = color == UIColor.blue ? 1 : 0.2
-        self.orangeButton.alpha = color == UIColor.orange ? 1 : 0.2
     }
+    
+    private func changeBackgroundColorButtonAlpha(color: UIColor) {
+        self.blackButton.alpha = color == .black ? 1 : 0.2
+        self.blueButton.alpha = color == .blue ? 1 : 0.2
+        self.orangeButton.alpha = color == .orange ? 1 : 0.2
+    }
+    
+    private func configureView() {
+        if let ledText = ledText {
+            self.contentField.text = ledText
+        }
+        self.changeTextColorButtonAlpha(color: self.textColor)
+        self.changeBackgroundColorButtonAlpha(color: self.backgroundColor)
+    }
+    
 }
